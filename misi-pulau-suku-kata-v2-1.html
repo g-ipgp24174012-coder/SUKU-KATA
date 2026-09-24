@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏴‍☠️ Misi Pulau Suku Kata</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  --ink:#18324b;--muted:#60788b;--blue:#1687d9;--gold:#f5bd45;
+  --green:#55b96b;--cream:#fffaf0;--purple:#7d63d2;
+}
+body{
+ margin:0;min-height:100vh;font-family:system-ui,-apple-system,Segoe UI,sans-serif;
+ color:var(--ink);background:linear-gradient(#8edff5 0 48%,#b9e49b 48% 100%);
+ overflow-x:hidden;
+}
+body:before,body:after{content:"";position:fixed;border-radius:50%;background:rgba(255,255,255,.6);z-index:-1}
+body:before{width:180px;height:60px;top:8%;left:5%;filter:blur(3px)}
+body:after{width:220px;height:70px;top:15%;right:4%;filter:blur(4px)}
+.app{max-width:1100px;margin:auto;padding:16px}
+header{
+ display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+ background:rgba(255,255,255,.94);border:3px solid #fff;border-radius:22px;
+ padding:14px 18px;box-shadow:0 8px 25px rgba(32,80,110,.14)
+}
+.brand{display:flex;align-items:center;gap:12px}.brand-icon{font-size:42px}
+h1{font-size:clamp(22px,4vw,34px);margin:0}.tag{color:var(--muted);font-size:14px}
+.progress{background:#fff1bd;padding:9px 14px;border-radius:999px;font-weight:900}
+.screen{display:none;margin-top:18px}.screen.active{display:block}
+.card{
+ background:rgba(255,255,255,.96);border-radius:28px;padding:26px;
+ box-shadow:0 10px 30px rgba(32,80,110,.14);border:2px solid rgba(255,255,255,.9)
+}
+button{
+ border:0;border-radius:15px;padding:13px 20px;background:var(--blue);color:white;
+ font-weight:900;font-size:16px;cursor:pointer;box-shadow:0 5px 0 #09649f;
+ transition:.15s
+}
+button:hover{transform:translateY(-2px)} button:active{transform:translateY(3px);box-shadow:none}
+button.alt{background:#edf6fb;color:#24536e;box-shadow:none}
+.hero{text-align:center;padding:45px 25px}
+.hero .ship{font-size:80px;animation:float 2s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-8px)}}
+.hero h2{font-size:36px;margin:8px 0}.hero p{max-width:650px;margin:12px auto 24px;line-height:1.6;color:var(--muted)}
+.tip{display:inline-block;background:#fff7d9;padding:8px 13px;border-radius:999px;font-weight:800}
+
+.map{
+ position:relative;min-height:610px;border-radius:28px;overflow:hidden;
+ background:
+ radial-gradient(circle at 17% 20%,#fff 0 7px,transparent 8px),
+ radial-gradient(circle at 76% 16%,#fff 0 9px,transparent 10px),
+ linear-gradient(#7fd9ef 0 55%,#b8df8e 55% 100%);
+ border:5px solid #fff;
+}
+.sun{position:absolute;right:5%;top:5%;font-size:54px}
+.sea{position:absolute;left:0;right:0;bottom:43%;height:3px;background:rgba(255,255,255,.5)}
+.map-title{position:absolute;top:20px;left:50%;transform:translateX(-50%);background:#fff;padding:9px 17px;border-radius:999px;font-weight:950;z-index:4}
+.route{position:absolute;height:6px;background:#fff;opacity:.85;border-radius:10px;transform-origin:left center;z-index:1}
+.r1{width:250px;left:20%;top:70%;transform:rotate(-24deg)}
+.r2{width:245px;left:42%;top:58%;transform:rotate(18deg)}
+.r3{width:245px;left:64%;top:68%;transform:rotate(-25deg)}
+.r4{width:235px;left:61%;top:45%;transform:rotate(-57deg)}
+.island{
+ position:absolute;width:158px;height:112px;border-radius:50%;z-index:3;
+ background:linear-gradient(#ffe6a3,#e7b85e);border:5px solid #fff;
+ box-shadow:0 9px 0 rgba(83,70,34,.15);display:flex;flex-direction:column;
+ align-items:center;justify-content:center;cursor:pointer;transition:.2s
+}
+.island:hover:not(.locked){transform:translateY(-5px) scale(1.03)}
+.island.locked{filter:grayscale(.8);opacity:.5;cursor:not-allowed}
+.island.done{background:linear-gradient(#c9f4c9,#76d27f)}
+.island .obj{font-size:32px}.island strong{font-size:17px}
+.i1{left:6%;top:61%}.i2{left:29%;top:36%}.i3{right:5%;top:62%}
+.i4{right:7%;top:30%}.i5{left:42%;top:9%}
+.start{
+ position:absolute;left:44%;bottom:4%;z-index:4;background:#fff7cf;
+ padding:10px 16px;border-radius:15px;font-weight:950
+}
+.char{position:absolute;bottom:7%;left:20%;font-size:52px;z-index:5;animation:walk 3s ease-in-out infinite}
+@keyframes walk{50%{transform:translateX(35px)}}
+.mission-head{text-align:center}.mission-head .icon{font-size:70px}
+.mission-head h2{font-size:34px;margin:0 0 5px}.mission-head p{color:var(--muted)}
+.hint{background:#eef8ff;border-radius:17px;padding:13px;text-align:center;font-weight:750}
+.treasures{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin:22px 0}
+.treasure{
+ min-height:190px;border:3px dashed #dfb14a;border-radius:22px;background:#fffaf0;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;
+ transition:.2s;position:relative
+}
+.treasure:hover{transform:translateY(-3px);background:#fff5d8}
+.treasure.found{border-style:solid;border-color:#61bd70;background:#eaffea}
+.chest{font-size:64px;transition:.25s}.found .chest{animation:openChest .5s}
+@keyframes openChest{50%{transform:scale(1.2) rotate(-5deg)}}
+.syllable{font-size:34px;font-weight:950;letter-spacing:2px}
+.combine{display:none;text-align:center;background:#f5f0ff;border:2px solid #b9a5ed;border-radius:22px;padding:22px}
+.combine.show{display:block;animation:pop .3s ease}
+@keyframes pop{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
+.word{font-size:44px;font-weight:950}.sentence{font-size:18px;color:#526978;margin:8px}
+.actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:14px}
+.feedback{min-height:27px;font-weight:900;margin-top:9px}
+.final{text-align:center;padding:45px 25px}.final .treasure-big{font-size:90px}
+.keys{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin:18px}
+.key{padding:9px 14px;border-radius:999px;background:#e7fff0;border:2px solid #6fc682;font-weight:900}
+.choice{margin-top:18px}.choice button{margin:5px}
+@media(max-width:700px){
+ .map{min-height:680px}.island{width:125px;height:92px}
+ .i1{left:2%;top:63%}.i2{left:30%;top:41%}.i3{right:2%;top:63%}
+ .i4{right:4%;top:24%}.i5{left:36%;top:7%}
+ .route,.char{display:none}.start{left:35%}.treasures{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+ <div class="brand"><div class="brand-icon">🏴‍☠️</div><div><h1>Misi Pulau Suku Kata</h1><div class="tag">Treasure Hunt Bahasa Melayu • KV + KV</div></div></div>
+ <div class="progress" id="progress">0 / 5</div>
+</header>
+
+<section id="start" class="screen active">
+ <div class="card hero">
+  <div class="ship">🚢</div>
+  <div class="tip">🏆 Misi Pemburu Harta</div>
+  <h2>Cari Suku Kata!</h2>
+  <p>Terokai pulau, buka peti harta dan cari dua suku kata. Gabungkan kedua-duanya untuk membentuk perkataan.</p>
+  <button onclick="showMap()">MULA BERMAIN 🚀</button>
+ </div>
+</section>
+
+<section id="map" class="screen">
+ <div class="card">
+  <div class="map">
+   <div class="sun">☀️</div><div class="sea"></div>
+   <div class="map-title">🗺️ PETA MISI</div>
+   <div class="route r1"></div><div class="route r2"></div><div class="route r3"></div><div class="route r4"></div>
+   <div class="char">🧑‍🏫</div><div class="start">🚢 START</div>
+   <div class="island i1" data-word="bola" onclick="openMission('bola')"><div class="obj">⚽</div><strong>BOLA</strong></div>
+   <div class="island i2 locked" data-word="baju" onclick="openMission('baju')"><div class="obj">👕</div><strong>BAJU</strong></div>
+   <div class="island i3 locked" data-word="jari" onclick="openMission('jari')"><div class="obj">🖐️</div><strong>JARI</strong></div>
+   <div class="island i4 locked" data-word="kaki" onclick="openMission('kaki')"><div class="obj">🦶</div><strong>KAKI</strong></div>
+   <div class="island i5 locked" data-word="dadu" onclick="openMission('dadu')"><div class="obj">🎲</div><strong>DADU</strong></div>
+  </div>
+ </div>
+</section>
+
+<section id="mission" class="screen">
+ <div class="card">
+  <div class="mission-head">
+   <div class="icon" id="missionIcon">🏝️</div>
+   <h2 id="missionTitle">Misi BOLA</h2>
+   <p>🔎 Buka kedua-dua peti untuk mencari suku kata.</p>
+  </div>
+  <div class="hint" id="missionHint"></div>
+  <div class="treasures">
+   <div class="treasure" id="t1" onclick="findTreasure(0)"><div class="chest">🧰</div><div class="syllable">?</div><small>Klik peti</small></div>
+   <div class="treasure" id="t2" onclick="findTreasure(1)"><div class="chest">🧰</div><div class="syllable">?</div><small>Klik peti</small></div>
+  </div>
+  <div class="combine" id="combine">
+   <div>🎉 <b>Treasure lengkap!</b></div>
+   <div class="word" id="comboText"></div>
+   <div class="sentence" id="sentence"></div>
+   <div class="actions">
+    <button onclick="speakWord()">🔊 Dengar sebutan</button>
+    <button class="alt" onclick="backToMap()">🗺️ Kembali ke peta</button>
+   </div>
+   <div class="feedback" id="feedback"></div>
+  </div>
+ </div>
+</section>
+
+<section id="final" class="screen">
+ <div class="card final">
+  <div class="treasure-big">💰</div>
+  <h2>TAHNIAH! 🎉</h2>
+  <p>Semua harta suku kata telah ditemui.</p>
+  <div class="keys" id="keys"></div>
+  <h3>🏆 PETI HARTA KARUN TERBUKA!</h3>
+  <p><b>BOLA • BAJU • JARI • KAKI • DADU</b></p>
+  <button onclick="location.reload()">🔄 Main Semula</button>
+ </div>
+</section>
+</div>
+
+<script>
+const missions={
+ bola:{icon:"⚽",a:"BO",b:"LA",sentence:"Ali bermain bola.",hint:"Cari BO dan LA. Gabungkan kedua-duanya."},
+ baju:{icon:"👕",a:"BA",b:"JU",sentence:"Ali memakai baju.",hint:"Cari BA dan JU. Gabungkan kedua-duanya."},
+ jari:{icon:"🖐️",a:"JA",b:"RI",sentence:"Ali ada 10 jari.",hint:"Cari JA dan RI. Gabungkan kedua-duanya."},
+ kaki:{icon:"🦶",a:"KA",b:"KI",sentence:"Ali ada kaki.",hint:"Cari KA dan KI. Gabungkan kedua-duanya."},
+ dadu:{icon:"🎲",a:"DA",b:"DU",sentence:"Ali suka dadu.",hint:"Cari DA dan DU. Gabungkan kedua-duanya."}
+};
+const order=["bola","baju","jari","kaki","dadu"];
+let current=null,found=[false,false],completed=[];
+
+function show(id){document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active")}
+function showMap(){show("map");updateMap()}
+function updateMap(){
+ document.getElementById("progress").textContent=completed.length+" / 5";
+ document.querySelectorAll(".island").forEach(e=>{
+  let w=e.dataset.word,i=order.indexOf(w);
+  e.classList.toggle("done",completed.includes(w));
+  e.classList.toggle("locked",i>completed.length&&!completed.includes(w));
+ });
+}
+function openMission(word){
+ let i=order.indexOf(word);if(i>completed.length)return;
+ current=word;found=[false,false];let m=missions[word];
+ document.getElementById("missionIcon").textContent=m.icon;
+ document.getElementById("missionTitle").textContent="Misi "+word.toUpperCase();
+ document.getElementById("missionHint").textContent="💡 "+m.hint;
+ document.getElementById("combine").classList.remove("show");
+ document.getElementById("feedback").textContent="";
+ reset("t1");reset("t2");show("mission");
+}
+function reset(id){
+ let e=document.getElementById(id);e.classList.remove("found");
+ e.querySelector(".chest").textContent="🧰";e.querySelector(".syllable").textContent="?";e.querySelector("small").textContent="Klik peti";
+}
+function findTreasure(n){
+ if(found[n])return;found[n]=true;let m=missions[current];
+ let e=document.getElementById(n===0?"t1":"t2");e.classList.add("found");
+ e.querySelector(".chest").textContent="💎";e.querySelector(".syllable").textContent=n===0?m.a:m.b;
+ e.querySelector("small").textContent="Suku kata ditemui!";
+ if(found[0]&&found[1])completeMission();
+}
+function completeMission(){
+ let m=missions[current];
+ document.getElementById("comboText").textContent=m.a+" + "+m.b+" = "+current.toUpperCase();
+ document.getElementById("sentence").textContent="📖 "+m.sentence;
+ document.getElementById("combine").classList.add("show");
+ if(!completed.includes(current)){completed.push(current);document.getElementById("feedback").textContent="🗝️ Kunci "+current.toUpperCase()+" diperoleh!";updateMap()}
+}
+function speakWord(){
+ let m=missions[current];
+ if("speechSynthesis"in window){speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(m.a+"... "+m.b+"... "+current);u.lang="ms-MY";u.rate=.72;speechSynthesis.speak(u)}
+}
+function backToMap(){
+ if(completed.length===5){
+  document.getElementById("keys").innerHTML=completed.map(x=>`<span class="key">🗝️ ${x.toUpperCase()}</span>`).join("");
+  show("final")
+ }else{show("map");updateMap()}
+}
+</script>
+</body>
+</html>
